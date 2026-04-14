@@ -170,7 +170,3 @@ Tavily – for the search API.
 
 OpenAI – for the GPT‑4o‑mini model.
 
-
-
-
-
