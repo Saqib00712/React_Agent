@@ -1,31 +1,30 @@
-ReAct AI Agent with LangGraph
-This repository demonstrates a ReAct (Reasoning + Acting) agent built with LangGraph and LangChain. The agent combines step‑by‑step reasoning with the ability to use external tools (web search, domain‑specific logic) to answer complex, real‑world queries.
+# ReAct AI Agent with LangGraph
 
-🧠 What is ReAct?
-ReAct stands for Reasoning + Acting. It enables LLMs to:
+This repository demonstrates a **ReAct (Reasoning + Acting)** agent built with **LangGraph** and **LangChain**. The agent combines step‑by‑step reasoning with the ability to use external tools (web search, domain‑specific logic) to answer complex, real‑world queries.
 
-Think – maintain an internal dialogue and break down a problem.
+## What is ReAct?
 
-Act – call external tools (search engines, calculators, APIs) to gather information.
+ReAct stands for **Reasoning + Acting**. It enables LLMs to:
 
-Observe – incorporate tool results into the reasoning loop.
+1. **Think** – maintain an internal dialogue and break down a problem.  
+2. **Act** – call external tools (search engines, calculators, APIs) to gather information.  
+3. **Observe** – incorporate tool results into the reasoning loop.  
 
 This cycle continues until the agent has enough information to give a final answer.
 
-✨ Features
-Web search – real‑time information retrieval using Tavily Search API.
+## Features
 
-Clothing recommendation – domain‑specific tool that maps weather conditions to clothing advice.
+- **Web search** – real‑time information retrieval using Tavily Search API.  
+- **Clothing recommendation** – domain‑specific tool that maps weather conditions to clothing advice.  
+- **Manual ReAct loop** – educational step‑by‑step execution of the reasoning–acting flow.  
+- **Automated LangGraph** – state machine that handles tool calling, message management, and routing.  
+- **Streaming output** – pretty‑printed messages that show the agent’s thoughts and actions.
 
-Manual ReAct loop – educational step‑by‑step execution of the reasoning–acting flow.
+## Installation
 
-Automated LangGraph – state machine that handles tool calling, message management, and routing.
+### 1. Clone the repository
 
-Streaming output – pretty‑printed messages that show the agent’s thoughts and actions.
-
-📦 Installation
-1. Clone the repository
-bash
+```bash
 git clone https://github.com/yourusername/react-langgraph-agent.git
 cd react-langgraph-agent
 2. Install dependencies
@@ -50,7 +49,7 @@ python
 import os
 os.environ["OPENAI_API_KEY"] = "..."
 os.environ["TAVILY_API_KEY"] = "..."
-🚀 Usage
+Usage
 You can run the agent either interactively (using the LangGraph compiled graph) or step‑by‑step to understand the internal flow.
 
 Interactive execution (automated graph)
@@ -73,7 +72,7 @@ Generate a final answer with both weather and clothing advice.
 Manual loop (educational)
 The notebook also contains a manual implementation that shows exactly how the model generates tool calls, how tools are executed, and how the conversation state evolves.
 
-🛠️ How It Works
+How It Works
 1. Tools
 Two tools are defined:
 
@@ -109,7 +108,7 @@ workflow.set_entry_point("agent")
 graph = workflow.compile()
 The compiled graph automatically runs the ReAct loop until no more tool calls are required.
 
-📝 Example Output
+Example Output
 For the query:
 “What's the weather like in Zurich, and what should I wear based on the temperature?”
 
@@ -144,14 +143,7 @@ Tool Calls:
 
 The weather in Zurich is currently overcast with a temperature of 64.9°F (18.3°C).  
 A light jacket should be comfortable for this weather.
-📁 Repository Structure
-text
-.
-├── README.md                # This file
-├── react_agent.ipynb        # Full Jupyter notebook with code and explanations
-├── requirements.txt         # Python dependencies
-└── .env.example             # Example environment variables file
-🔮 Possible Extensions
+Possible Extensions
 Add more tools (e.g., calculator, database query, image generator).
 
 Use a different LLM (Claude, Llama) via LangChain integrations.
@@ -160,13 +152,14 @@ Persist conversation state across sessions.
 
 Add human‑in‑the‑loop approval for sensitive actions.
 
-📄 License
+License
 MIT – feel free to use and adapt for your own projects.
 
-🙏 Acknowledgements
+Acknowledgements
 LangGraph – for building stateful, multi‑actor LLM applications.
 
 Tavily – for the search API.
 
 OpenAI – for the GPT‑4o‑mini model.
 
+Contributing
