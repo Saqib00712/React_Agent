@@ -1,165 +1,140 @@
-# ReAct AI Agent with LangGraph
+# ReAct Agent with LangGraph
+> Reasoning + Acting AI agent that thinks through problems, calls external tools, observes results, and loops until a final answer is reached — built with LangGraph and GPT-4o-mini.
 
-This repository demonstrates a **ReAct (Reasoning + Acting)** agent built with **LangGraph** and **LangChain**. The agent combines step‑by‑step reasoning with the ability to use external tools (web search, domain‑specific logic) to answer complex, real‑world queries.
+---
 
 ## What is ReAct?
 
-ReAct stands for **Reasoning + Acting**. It enables LLMs to:
+ReAct (**Re**asoning + **Act**ing) is an agent framework that combines three phases in a continuous loop:
 
-1. **Think** – maintain an internal dialogue and break down a problem.  
-2. **Act** – call external tools (search engines, calculators, APIs) to gather information.  
-3. **Observe** – incorporate tool results into the reasoning loop.  
+Think → Act → Observe → Think → Act → ...
 
-This cycle continues until the agent has enough information to give a final answer.
+| Phase | What happens |
+|-------|-------------|
+| **Reasoning** | The agent thinks step-by-step about what it needs to do |
+| **Acting** | The agent calls external tools (web search, APIs, calculators) |
+| **Observing** | The agent reads tool results and updates its reasoning |
 
-## Features
+---
 
-- **Web search** – real‑time information retrieval using Tavily Search API.  
-- **Clothing recommendation** – domain‑specific tool that maps weather conditions to clothing advice.  
-- **Manual ReAct loop** – educational step‑by‑step execution of the reasoning–acting flow.  
-- **Automated LangGraph** – state machine that handles tool calling, message management, and routing.  
-- **Streaming output** – pretty‑printed messages that show the agent’s thoughts and actions.
+## Demo
 
-## Installation
+**Query:** *"What's the weather like in Zurich, and what should I wear?"*
+Agent → calls search_tool("weather in Zurich")
+→ observes: "Overcast, 64.9°F"
+→ calls recommend_clothing("Overcast, 64.9°F")
+→ observes: "Wear a warm jacket or sweater"
+→ Final answer: "It's 64.9°F and overcast in Zurich. I recommend wearing a warm jacket..."
 
-### 1. Clone the repository
+## Architecture
+User Query
+↓
+[Agent Node] ← reasoning with GPT-4o-mini
+↓
+Should continue?
+├── YES → [Tools Node] → execute tool → back to Agent
+└── NO  → Final Answer
 
+
+Built with **LangGraph StateGraph** — a state machine that automates the reasoning loop.
+
+---
+
+## Tools Used
+
+| Tool | Purpose |
+|------|---------|
+| `search_tool` | Real-time web search via Tavily API — overcomes LLM knowledge cutoff |
+| `recommend_clothing` | Domain-specific reasoning based on weather conditions |
+
+---
+
+## Tech Stack
+
+![Python](https://img.shields.io/badge/Python-3.10+-blue?style=flat-square)
+![LangGraph](https://img.shields.io/badge/LangGraph-0.3.34-teal?style=flat-square)
+![LangChain](https://img.shields.io/badge/LangChain-0.3.24-green?style=flat-square)
+![OpenAI](https://img.shields.io/badge/GPT--4o--mini-OpenAI-black?style=flat-square)
+
+- **LangGraph** — StateGraph for automated agent loop
+- **LangChain** — Tool binding, prompt templates, message types
+- **GPT-4o-mini** — Reasoning engine
+- **Tavily Search API** — Real-time web search
+- **Python** — Core language
+
+---
+
+## Project Structure
+React_Agent/
+│
+├── react_agent.ipynb       # Main notebook with full implementation
+├── requirements.txt        # All dependencies
+├── .env.example            # Required API keys (template)
+└── README.md
+
+---
+
+## Getting Started
+
+### 1. Clone the repo
 ```bash
-git clone https://github.com/yourusername/react-langgraph-agent.git
-cd react-langgraph-agent
-2. Install dependencies
-bash
-pip install -U langgraph langchain-openai langchain-community tavily-python
-Alternatively, use the exact versions from the notebook:
-langgraph==0.3.34, langchain-openai==0.3.14, langchainhub==0.1.21, langchain==0.3.24, pygraphviz==1.14, langchain-community==0.3.23
+git clone https://github.com/Saqib00712/React_Agent.git
+cd React_Agent
+```
 
-3. Set up API keys
-You need two API keys:
+### 2. Install dependencies
+```bash
+pip install -r requirements.txt
+```
 
-OpenAI API key – for the GPT‑4o-mini model.
+### 3. Set up API keys
+```bash
+cp .env.example .env
+```
+Edit `.env` and add your keys:
 
-Tavily API key – for web search. Get one here.
+OPENAI_API_KEY=your_openai_key_here
+TAVILY_API_KEY=your_tavily_key_here
 
-bash
-export OPENAI_API_KEY="your-openai-key"
-export TAVILY_API_KEY="your-tavily-key"
-Or set them directly in Python (not recommended for production):
+### 4. Run the notebook
+```bash
+jupyter notebook react_agent.ipynb
+```
 
-python
-import os
-os.environ["OPENAI_API_KEY"] = "..."
-os.environ["TAVILY_API_KEY"] = "..."
-Usage
-You can run the agent either interactively (using the LangGraph compiled graph) or step‑by‑step to understand the internal flow.
+---
 
-Interactive execution (automated graph)
-python
-from langchain_core.messages import HumanMessage
-from your_agent_script import graph, print_stream  # assuming the code is in a module
+## Key Concepts Covered
 
-inputs = {"messages": [HumanMessage(content="What's the weather like in Zurich, and what should I wear based on the temperature?")]}
-print_stream(graph.stream(inputs, stream_mode="values"))
-The agent will:
+- **AgentState** with LangGraph's `add_messages` reducer for context management
+- **Tool binding** — attaching custom tools to a language model
+- **Conditional edges** — routing logic between agent and tool nodes
+- **Manual vs automated** ReAct loop — understanding both approaches
+- **StateGraph compilation** — building production-ready agent pipelines
 
-Think about what information is needed.
+---
 
-Call the search tool to get Zurich’s weather.
+## What I Learned
 
-Observe the result and decide to call the clothing recommendation tool.
+Building this project deepened my understanding of how LLM agents manage multi-step reasoning. The key insight is that the agent doesn't "know" the answer upfront — it discovers it by iterating through the Think → Act → Observe loop, which mirrors how humans solve problems with incomplete information.
 
-Generate a final answer with both weather and clothing advice.
+---
 
-Manual loop (educational)
-The notebook also contains a manual implementation that shows exactly how the model generates tool calls, how tools are executed, and how the conversation state evolves.
+## Related Certifications
 
-How It Works
-1. Tools
-Two tools are defined:
+This project was built as part of the IBM **Building AI Agents and Agentic Workflows Specialization** on Coursera.
 
-search_tool – wraps the Tavily search API.
+[![IBM Badge](https://img.shields.io/badge/IBM-AI%20Agents%20Specialization-blue?style=flat-square)](https://www.credly.com/users/muhammad-saqib.361f9b8c)
 
-recommend_clothing – maps weather keywords (snow, rain, hot, cold) to clothing suggestions.
+---
 
-All tools are stored in a dictionary tools_by_name for easy lookup.
+## Author
 
-2. Agent State
-The state is a TypedDict containing a messages key with a reducer (add_messages) that automatically appends new messages.
+**Muhammad Saqib**
+- GitHub: [@Saqib00712](https://github.com/Saqib00712)
+- LinkedIn: [muhammad-saqib](https://www.linkedin.com/in/muhammad-saqib-68b9b3374/)
+- Email: saqibkhosa649@gmail.com
+- Credly: [15x IBM Certified](https://www.credly.com/users/muhammad-saqib.361f9b8c)
 
-3. Graph Nodes
-call_model – invokes the LLM with the system prompt and current conversation history. The model can return tool calls.
 
-tool_node – executes all tool calls from the last AI message and returns ToolMessage objects.
 
-4. Conditional Routing
-A should_continue function checks the last message:
 
-If it has tool_calls → go to the tools node.
-
-Otherwise → end the conversation.
-
-5. Graph Construction
-python
-workflow = StateGraph(AgentState)
-workflow.add_node("agent", call_model)
-workflow.add_node("tools", tool_node)
-workflow.add_edge("tools", "agent")
-workflow.add_conditional_edges("agent", should_continue, {...})
-workflow.set_entry_point("agent")
-graph = workflow.compile()
-The compiled graph automatically runs the ReAct loop until no more tool calls are required.
-
-Example Output
-For the query:
-“What's the weather like in Zurich, and what should I wear based on the temperature?”
-
-The agent might output:
-
-text
-================================ AI Message ================================
-
-I'll search for the current weather in Zurich first.
-
-Tool Calls:
-  search_tool (call_abc123)
-   Args:
-     query: current weather in Zurich
-================================ Tool Message ================================
-
-[{'title': 'Zurich Weather - MeteoSwiss', 'content': 'Today: Overcast, 64.9°F (18.3°C)...'}]
-
-================================ AI Message ================================
-
-Now I have the weather: overcast, 64.9°F. I'll recommend clothing based on that.
-
-Tool Calls:
-  recommend_clothing (call_def456)
-   Args:
-     weather: overcast 64.9°F
-================================ Tool Message ================================
-
-"A light jacket should be fine."
-
-================================ AI Message ================================
-
-The weather in Zurich is currently overcast with a temperature of 64.9°F (18.3°C).  
-A light jacket should be comfortable for this weather.
-Possible Extensions
-Add more tools (e.g., calculator, database query, image generator).
-
-Use a different LLM (Claude, Llama) via LangChain integrations.
-
-Persist conversation state across sessions.
-
-Add human‑in‑the‑loop approval for sensitive actions.
-
-License
-MIT – feel free to use and adapt for your own projects.
-
-Acknowledgements
-LangGraph – for building stateful, multi‑actor LLM applications.
-
-Tavily – for the search API.
-
-OpenAI – for the GPT‑4o‑mini model.
-
-Contributing
